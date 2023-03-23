@@ -1,8 +1,22 @@
 <?php
 
+/**
+ * File name: index.php
+ *
+ * PHP script that store data in localstorage using session.
+ *
+ * PHP version 8.2
+ *
+ * @category PHP
+ * @package  PDOTASK
+ * @author   sijila <sijila.b@codilar.com>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     https://example.com/my_file
+ */
+
 session_start();
 if (isset($_SESSION['loggedIn'])) {
-    header("location: index.html");
+    header("location: registration.html");
     clearstatcache();
 }
 

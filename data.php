@@ -8,7 +8,7 @@
  * PHP version 8.2
  *
  * @category PHP
- * @package  MyPackage
+ * @package  PDO
  * @author   sijila <sijila.b@codilar.com>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     https://example.com/my_file
@@ -35,16 +35,30 @@ $email = $_POST["email"];
 $dob = $_POST["dob"];
 $phone = $_POST["phone"];
 $designation = $_POST["designation"];
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM employtb WHERE email = ?");
+$stmt->execute([$email]);
+$emailCount = $stmt->fetchColumn();
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM employtb WHERE phone = ?");
+$stmt->execute([$phone]);
+$phoneCount = $stmt->fetchColumn();
 
-try {
-    $stmt = $pdo->prepare("INSERT INTO employtb (name, email, dob, phone, designation) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bindParam(1, $name);
-    $stmt->bindParam(2, $email);
-    $stmt->bindParam(3, $dob);
-    $stmt->bindParam(4, $phone);
-    $stmt->bindParam(5, $designation);
-    $stmt->execute();
-    echo "New record created successfully";
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+if ($emailCount > 0) {
+    echo "<script>alert('Email already exists. Please enter a different email.')</script>";
+    exit();
+} else if ($phoneCount > 0) {
+    echo "<script>alert('Phone number already exists. Please enter a different phone number.')</script>";
+} else {
+    try {
+        $stmt = $pdo->prepare("INSERT INTO employtb (name, email, dob, phone, designation) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bindParam(1, $name);
+        $stmt->bindParam(2, $email);
+        $stmt->bindParam(3, $dob);
+        $stmt->bindParam(4, $phone);
+        $stmt->bindParam(5, $designation);
+        $stmt->execute();
+        header('Location: view_employees.php');
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
+?>

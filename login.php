@@ -26,7 +26,8 @@ $currentPassword = $_POST["password"];
 
 if ($user == $currentUser && $password == $currentPassword) {
     $_SESSION['loggedIn'] = true;
-    header("Location: index.html");
+    header("Location: registration.html");
 } else {
-    header("Location: admin_login.php");
+    header("Location: index.php");
+    echo "<script>alert(Invalid Login data')</script>";
 }

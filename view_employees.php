@@ -1,19 +1,4 @@
 <?php
-
-/**
- * File name: view_employees.php
- *
- * PHP script that store data in localstorage using session.
- *
- * PHP version 8.2
- *
- * @category PHP
- * @package  PDOTASK
- * @author   sijila <sijila.b@codilar.com>
- * @license  https://opensource.org/licenses/MIT MIT License
- * @link     https://example.com/my_file
- */
-
 require_once realpath(__DIR__ . '/vendor/autoload.php');
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeload();
@@ -28,6 +13,17 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
+}
+
+if(isset($_POST['delete'])) {
+    $id = $_POST['id'];
+    try {
+        $stmt = $pdo->prepare("DELETE FROM employtb WHERE id=:id");
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
 
 try {
@@ -68,8 +64,18 @@ try {
     color:black;
     margin-top: 50px;
   }
+  span{
+    display:flex;
+  }
+  button{
+    background-color: black;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
 
-    </style>
+        </style>
 </head>
 <body>
     <h2>Employee Information</h2>
@@ -81,6 +87,7 @@ try {
             <th>Date of Birth</th>
             <th>Phone</th>
             <th>Designation</th>
+            <th>Action</th>
         </tr>
         <?php foreach ($result as $row) : ?>
         <tr>
@@ -90,8 +97,25 @@ try {
             <td><?php echo $row['dob']; ?></td>
             <td><?php echo $row['phone']; ?></td>
             <td><?php echo $row['designation']; ?></td>
+            <td>
+                <span>
+                    <form method="get" action="edit_employee.php">
+                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <!-- <form method="post" onsubmit="return confirm('Are you sure you want to delete this employee?')">
+                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                        <button type="submit" name="delete">Delete</button>
+                    </form> -->
+                    <!-- code for the table -->
+                    <form method="post" action="delete_employee.php">
+            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>
+        </form>
+                </span>
+            </td>
         </tr>
         <?php endforeach; ?>
     </table>
 </body>
-</html>
+</html> 
